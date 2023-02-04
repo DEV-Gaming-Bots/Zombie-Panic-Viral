@@ -6,8 +6,11 @@ public partial class PlayerPawn : AnimatedEntity
 	[ClientInput] public Vector2 MoveInput { get; protected set; }
 	[ClientInput] public Angles LookInput { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
-
-	ClothingContainer clothing = new();
+	[ClientInput] public Entity ActiveWeaponInput { get; set; }
+	[BindComponent] public Inventory Inventory { get; }
+	[BindComponent] public PlayerAnimator Animator { get; }
+	public DamageInfo LastDamage { get; protected set; }
+	public Weapon ActiveWeapon => Inventory?.ActiveWeapon;
 
 	public Vector3 EyePosition 
 	{
@@ -29,11 +32,6 @@ public partial class PlayerPawn : AnimatedEntity
 
 	}
 
-	public PlayerPawn(IClient client) : this()
-	{
-		clothing.LoadFromClient(client);
-	}
-
 	public void SetSpawnPosition()
 	{
 		var spawnpoint = All.OfType<SpawnPoint>().OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
@@ -42,49 +40,52 @@ public partial class PlayerPawn : AnimatedEntity
 		{
 			var tx = spawnpoint.Transform;
 			tx.Position = tx.Position + Vector3.Up * 25.0f;
-			spawnpoint.Transform = tx;
+			Transform = tx;
+			ResetInterpolation();
 		}
 	}
 
 	public override void Spawn()
 	{
-		base.Spawn();
-
 		SetModel( "models/citizen/citizen.vmdl" );
-		Components.Create<Controller>();
+		Tags.Add( "player" );
 
-		clothing.DressEntity( this );
+		Components.Create<Controller>();
+		Components.Create<Inventory>();
+		Components.Create<PlayerAnimator>();
 
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
+
+		SetSpawnPosition();
 	}
 
 	public override void BuildInput()
 	{
-		//Inventory?.BuildInput();
+		Inventory?.BuildInput();
 
 		MoveInput = Input.AnalogMove;
 		var lookInput = (LookInput + Input.AnalogLook).Normal;
 
-		// Since we're a FPS game, let's clamp the player's pitch between -90, and 90.
 		LookInput = lookInput.WithPitch( lookInput.pitch.Clamp( -90f, 90f ) );
 	}
 
 	public override void Simulate( IClient cl )
 	{
-		base.Simulate( cl );
-
 		TickUse();
-		Controller?.Simulate(cl);
+		Controller?.Simulate( cl );
+		Animator?.Simulate( cl );
+		Inventory?.Simulate( cl );
 	}
 
 	public override void FrameSimulate( IClient cl )
 	{
-		base.FrameSimulate( cl );
+		Rotation = LookInput.WithPitch( 0f ).ToRotation();
 
-		Rotation = ViewAngles.ToRotation();
 		Controller?.FrameSimulate(cl);
+		Animator?.FrameSimulate(cl);
+
 		CameraSimulate();
 	}
 
@@ -129,11 +130,50 @@ public partial class PlayerPawn : AnimatedEntity
 
 		tr.Surface.DoFootstep( this, tr, foot, volume );
 	}
+
+	private async void AsyncRespawn()
+	{
+		await GameTask.DelaySeconds( 3f );
+		//Respawn();
+	}
+
+	public override void OnKilled()
+	{
+		if ( LifeState == LifeState.Alive )
+		{
+			CreateRagdoll( Controller.Velocity, LastDamage.Position, LastDamage.Force,
+				LastDamage.BoneIndex, LastDamage.HasTag( "bullet" ), LastDamage.HasTag( "blast" ) );
+
+			LifeState = LifeState.Dead;
+			EnableAllCollisions = false;
+			EnableDrawing = false;
+
+			Controller.Remove();
+			Animator.Remove();
+			Inventory.Remove();
+
+			// Disable all children as well.
+			Children.OfType<ModelEntity>()
+				.ToList()
+				.ForEach( x => x.EnableDrawing = false );
+
+			AsyncRespawn();
+		}
+	}
+
+	protected void UpdatePostProcess()
+	{
+		var postProcess = Camera.Main.FindOrCreateHook<Sandbox.Effects.ScreenEffects>();
+	}
+
 	public void CameraSimulate()
 	{
 		Camera.Position = EyePosition;
 		Camera.Rotation = EyeRotation;
-		Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
+		Camera.FieldOfView = Game.Preferences.FieldOfView;
 		Camera.FirstPersonViewer = this;
+		Camera.ZNear = 0.5f;
+
+		UpdatePostProcess();
 	}
 }

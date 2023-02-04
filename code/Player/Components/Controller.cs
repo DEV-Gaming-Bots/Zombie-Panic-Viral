@@ -32,13 +32,14 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 
 	public bool IsNoclipping = false;
 
+	public bool IsCrouching = false;
 	[Net, Predicted] public float CurrentEyeHeight { get; set; } = 64f;
 	public PlayerPawn Player => Entity;
 
 	[ConCmd.Server("noclip")]
 	public static void DoNoclip()
 	{
-		if ( !DRGame.Debugging ) return;
+		if ( !ZPVGame.Debugging ) return;
 
 		var player = ConsoleSystem.Caller.Pawn as PlayerPawn;
 		if ( player == null ) return;
@@ -280,6 +281,8 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 
 	public void DoCrouching(bool should)
 	{
+		IsCrouching = should;
+
 		if ( should )
 		{
 			curEyeHeight = MathX.Lerp( curEyeHeight, EyeCrouchHeight, Time.Delta * crouchSpeed );
