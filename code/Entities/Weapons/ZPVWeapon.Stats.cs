@@ -31,6 +31,17 @@ public partial class Weapon : AnimatedEntity
 	public virtual float EmptyReloadTime => 2.5f;
 	public virtual float UnloadTime => 2.5f;
 
+	public enum AmmoEnum
+	{
+		None,
+		Pistol,
+		Shotgun,
+		Rifle,
+		Magnum,
+		Misc
+	}
+	public virtual AmmoEnum AmmoType => AmmoEnum.None;
+
 	//Setup
 	public virtual float TimeToEquip => 1.0f;
 
@@ -65,4 +76,14 @@ public partial class Weapon : AnimatedEntity
 	public virtual Angles AvoidanceAngleOffset => new Angles( 10, 0, 0 );
 	public virtual Vector3 CrouchPositionOffset => new Vector3( -5, 0, 0 );
 	public virtual Angles CrouchAngleOffset => new Angles( 0, 0, 0 );
+
+	public enum TypeEnum
+	{
+		Melee,
+		Pistol,
+		Shotgun,
+		Rifle
+	}
+
+	public virtual TypeEnum WeaponType => TypeEnum.Melee;
 }

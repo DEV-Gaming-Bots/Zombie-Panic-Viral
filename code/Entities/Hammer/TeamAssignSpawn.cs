@@ -27,18 +27,16 @@ public class TeamAssignTrigger : BaseTrigger
 					break;
 
 				case TeamAssignEnum.Survivor:
-					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Survivor );
+					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Survivor, true );
 					break;
 
 				case TeamAssignEnum.Zombie:
-					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Zombie );
+					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Zombie, true );
 					break;
 			}
 
-			if( ZPVGame.Instance.CanStartRound() )
-			{
-
-			}
+			if ( ZPVGame.Instance.CanStartRound() )
+				ZPVGame.Instance.PreStartRound();
 		}
 	}
 }

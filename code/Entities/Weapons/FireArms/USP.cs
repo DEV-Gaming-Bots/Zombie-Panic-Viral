@@ -22,6 +22,7 @@ public partial class USP : Weapon
 	public override int MaximumAmmo => 15;
 	public override float ReloadTime => 2.65f;
 	public override float UnloadTime => 3.75f;
+	public override AmmoEnum AmmoType => AmmoEnum.Pistol;
 
 	//Setup
 	public override float TimeToEquip => 0.75f;
@@ -53,4 +54,5 @@ public partial class USP : Weapon
 	public override Angles AvoidanceAngleOffset => new Angles( 10, 0, 0 );
 	public override Vector3 CrouchPositionOffset => new Vector3( -5, 0, 0 );
 	public override Angles CrouchAngleOffset => new Angles( 0, 0, 0 );
+	public override TypeEnum WeaponType => TypeEnum.Pistol;
 }

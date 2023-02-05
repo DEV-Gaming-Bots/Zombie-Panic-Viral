@@ -1,0 +1,74 @@
+﻿@namespace ZPViral.UI
+@inherits Panel
+
+<style>
+	Vitals {
+		position: absolute;
+		top: 50px;
+		right: 50px;
+		color: red;
+		font-size: 64px;
+	}
+	.Armor {
+		position: absolute;
+		top: 100px;
+		color: rgb(30, 140, 255);
+		font-size: 64px;
+	}
+
+</style>
+
+<root>
+	@if (IsAssigned())
+	{
+		<panel>
+			@GetHealth()
+		</panel>	
+	}
+
+	@if (HasArmor())
+	{
+		<panel class="Armor">
+			@GetArmor()
+		</panel>
+	}
+</root>
+
+@code {
+	public int GetHealth()
+	{
+		var player = Game.LocalPawn as PlayerPawn;
+		if (player == null) return 0;
+
+		return (int)player.Health;
+	}
+
+	public bool IsAssigned()
+	{
+		var player = Game.LocalPawn;
+		if (player == null) return false;
+
+		return player is SurvivorPawn || player is ZombiePawn;
+	}
+
+	public int GetArmor()
+	{
+		var player = Game.LocalPawn as SurvivorPawn;
+		if (player == null) return 0;
+
+		return (int)player.Armor;
+	}
+
+	public bool HasArmor()
+	{
+		return GetArmor() > 0;
+	}
+
+	protected override int BuildHash()
+	{
+		var curHP = GetHealth();
+		var curArmor = GetArmor();
+
+		return curHP.GetHashCode() + curArmor.GetHashCode();
+	}
+}

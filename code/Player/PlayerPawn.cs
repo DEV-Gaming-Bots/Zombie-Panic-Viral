@@ -14,7 +14,6 @@ public partial class PlayerPawn : AnimatedEntity
 	public DamageInfo LastDamage { get; protected set; }
 	public Weapon ActiveWeapon => Inventory?.ActiveWeapon;
 	public bool ShouldPlayMusic { get; set; } = true;
-
 	public Vector3 EyePosition
 	{
 		get => Transform.PointToWorld( EyeLocalPosition );
@@ -28,11 +27,30 @@ public partial class PlayerPawn : AnimatedEntity
 
 	[Net, Predicted] public Vector3 EyeLocalPosition { get; set; }
 	[Net, Predicted] public Rotation EyeLocalRotation { get; set; }
+	[Net] public bool FreezeMovement { get; set; }
 	public override Ray AimRay => new Ray( EyePosition, EyeRotation.Forward );
+
+	public enum SurvivorType
+	{
+		Eugene,
+		Jessica,
+	}
+
+	[Net] public SurvivorType Survivor { get; set; } = SurvivorType.Eugene;
+
+	bool setView;
+	Angles setAngles;
 
 	public PlayerPawn()
 	{
 
+	}
+
+	[ClientRpc]
+	public void SetViewAngles( Angles angle )
+	{
+		setView = true;
+		setAngles = angle;
 	}
 
 	public virtual void SetSpawnPosition()
@@ -41,9 +59,8 @@ public partial class PlayerPawn : AnimatedEntity
 
 		if ( spawnpoint != null )
 		{
-			var tx = spawnpoint.Transform;
-			tx.Position = tx.Position + Vector3.Up * 25.0f;
-			Transform = tx;
+			Transform = spawnpoint.Transform;
+			SetViewAngles( spawnpoint.Rotation.Angles() );
 			ResetInterpolation();
 		}
 	}
@@ -51,6 +68,8 @@ public partial class PlayerPawn : AnimatedEntity
 	public virtual void CreateHull()
 	{
 		Tags.Add( "zpvpawn" );
+
+		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 72 ) );
 
 		EnableHitboxes = true;
 		EnableLagCompensation = true;
@@ -62,6 +81,8 @@ public partial class PlayerPawn : AnimatedEntity
 		//TEMPORARY
 		SetModel( "models/citizen/citizen.vmdl" );
 
+		FreezeMovement = false;
+
 		Components.Create<Controller>();
 		Components.Create<Inventory>();
 		Components.Create<PlayerAnimator>();
@@ -71,10 +92,19 @@ public partial class PlayerPawn : AnimatedEntity
 		EnableShadowInFirstPerson = true;
 
 		SetSpawnPosition();
+		CreateHull();
 	}
 
 	public override void BuildInput()
 	{
+		if ( setView )
+		{
+			LookInput = setAngles;
+			setView = false;
+		}
+
+		if ( FreezeMovement ) return;
+
 		Inventory?.BuildInput();
 
 		MoveInput = Input.AnalogMove;
@@ -89,11 +119,6 @@ public partial class PlayerPawn : AnimatedEntity
 		Controller?.Simulate( cl );
 		Animator?.Simulate( cl );
 		Inventory?.Simulate( cl );
-
-		if ( Game.IsClient ) 
-		{
-			SimulateMusic( ShouldPlayMusic );
-		}
 	}
 
 	public override void FrameSimulate( IClient cl )
@@ -156,24 +181,9 @@ public partial class PlayerPawn : AnimatedEntity
 		return 1;
 	}
 
-	public async void AsyncRespawn()
+	public virtual async void AsyncRespawn()
 	{
 		await GameTask.DelaySeconds( 7.5f );
-		Spawn();
-	}
-
-	Sound music;
-
-	public void SimulateMusic( bool shouldPlay )
-	{
-		if(!shouldPlay)
-		{
-			music.Stop();
-			return;
-		}
-
-		if ( music.Finished )
-			music = Sound.FromScreen( "music_randomtrack" );
 	}
 
 	[ClientRpc]
@@ -211,9 +221,18 @@ public partial class PlayerPawn : AnimatedEntity
 		}
 	}
 
-	protected void UpdatePostProcess()
+	[ClientRpc]
+	public void CleanUpCameraEffects()
 	{
 		var postProcess = Camera.Main.FindOrCreateHook<Sandbox.Effects.ScreenEffects>();
+
+		postProcess.Saturation = 1.0f;
+		postProcess.Brightness = 1.0f;
+	}
+
+	public virtual void UpdatePostProcess()
+	{
+
 	}
 
 	public void CameraSimulate()

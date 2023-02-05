@@ -6,6 +6,8 @@ public partial class Weapon
 
 	protected bool CanFire( PlayerPawn player )
 	{
+		if ( player != null && player.FreezeMovement ) return false;
+
 		if ( TimeSinceActivated < TimeToEquip ) return false;
 		if ( TimeUntilReloaded > 0 ) return false;
 
@@ -30,6 +32,12 @@ public partial class Weapon
 
 		if ( Game.IsServer )
 		{
+			if(Player is ZombiePawn zombie ) 
+			{
+				if( zombie.ZombieType == PlayerPawn.ZombieEnum.Carrier )
+					player.PlaySound( "carrier_attack" );
+			}
+
 			if ( IsMelee )
 			{
 				var hit = SwingMelee( BulletForce, BulletSize, BaseDamage, BulletRange );
@@ -131,9 +139,18 @@ public partial class Weapon
 
 	protected TraceResult DoTraceAttack( Vector3 start, Vector3 end, float radius )
 	{
+		string[] tags = new string[3];
+		tags[0] = "solid";
+		tags[1] = "glass";
+
+		if ( Player is ZombiePawn )
+			tags[2] = "survivor";
+		if ( Player is SurvivorPawn )
+			tags[2] = "zombie";
+
 		return Trace.Ray( start, end )
 		.UseHitboxes()
-		.WithAnyTags( "solid", "zombie", "glass" )
+		.WithAnyTags( tags )
 		.Ignore( Owner )
 		.Size( radius )
 		.Run();

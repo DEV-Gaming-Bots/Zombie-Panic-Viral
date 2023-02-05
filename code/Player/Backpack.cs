@@ -43,6 +43,20 @@ public partial class Inventory : EntityComponent<PlayerPawn>, ISingletonComponen
 		return success;
 	}
 
+	public bool Clear()
+	{
+		foreach ( var weapon in Weapons.ToArray() )
+		{
+			if ( weapon == ActiveWeapon )
+				ActiveWeapon.Cleanup();
+
+			weapon?.Delete();
+		}
+
+		Weapons.Clear();
+		return true;
+	}
+
 	public void SetActiveWeapon( Weapon weapon )
 	{
 		if ( weapon == null )

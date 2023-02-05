@@ -39,6 +39,13 @@ public partial class Weapon : AnimatedEntity, IUse
 		EnableDrawing = false;
 	}
 
+	public void Cleanup()
+	{
+		if ( Game.IsClient ) return;
+
+		DestroyViewModel( To.Single( Player.Client ) );
+	}
+
 	public void OnDrop(PlayerPawn player)
 	{
 		if ( Game.IsClient ) return;
@@ -90,6 +97,19 @@ public partial class Weapon : AnimatedEntity, IUse
 		ArmVM.Current?.SetAnimParameter( "empty", isEmpty );
 	}
 
+	Model GetPreferredArmModel()
+	{
+		Log.Info( Player.Survivor );
+
+		switch( Player.Survivor )
+		{
+			case PlayerPawn.SurvivorType.Eugene: return Model.Load( "models/arms/c_arms_eugene.vmdl" );
+			case PlayerPawn.SurvivorType.Jessica: return Model.Load( "models/arms/c_arms_jessica.vmdl" );
+		}
+
+		return null;
+	}
+
 	[ClientRpc]
 	public void CreateViewModel()
 	{
@@ -97,9 +117,12 @@ public partial class Weapon : AnimatedEntity, IUse
 		vm.Model = ViewModel;
 		ViewModelEntity = vm;
 
+		if ( Player is ZombiePawn ) return;
+
 		var arms = new ArmVM( this );
-		arms.SetModel( "models/arms/c_arms_eugene.vmdl" );
+		arms.Model = GetPreferredArmModel();
 		ArmsVMEntity = arms;
+		//ArmsVMEntity.SetParent( ViewModelEntity, true );
 
 		ArmsVMEntity.SetArmAnimations();
 	}

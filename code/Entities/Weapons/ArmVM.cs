@@ -45,6 +45,7 @@ public partial class ArmVM: AnimatedEntity
 	[ClientRpc]
 	public void SetArmAnimations()
 	{
+		SetAnimParameter( "pistol_enum", GetPistolAnimEnum() );
 		SetAnimParameter( "weapon_enum", GetWeaponAnimEnum() );
 	}
 
@@ -57,11 +58,22 @@ public partial class ArmVM: AnimatedEntity
 		if ( Weapon is Machete )
 			return 1;
 
-		if ( Weapon is USP )
+		if ( Weapon is USP || Weapon is Glock17 || Weapon is Glock18 )
 			return 2;
 
 		if ( Weapon is AK47 )
 			return 3;
+
+		return 0;
+	}
+
+	protected int GetPistolAnimEnum()
+	{
+		if ( Weapon is USP )
+			return 1;
+
+		if ( Weapon is Glock17 || Weapon is Glock18 )
+			return 2;
 
 		return 0;
 	}

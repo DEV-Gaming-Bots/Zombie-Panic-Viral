@@ -53,4 +53,5 @@ public partial class Machete : Weapon
 	public override Angles AvoidanceAngleOffset => new Angles( 10, 0, 0 );
 	public override Vector3 CrouchPositionOffset => new Vector3( -5, 0, 0 );
 	public override Angles CrouchAngleOffset => new Angles( 0, 0, 0 );
+	public override TypeEnum WeaponType => TypeEnum.Melee;
 }

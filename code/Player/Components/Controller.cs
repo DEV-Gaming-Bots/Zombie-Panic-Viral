@@ -318,8 +318,9 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 
 	public virtual void Simulate( IClient cl )
 	{
-		SimulateEyes();
+		if ( Player.FreezeMovement ) return;
 
+		SimulateEyes();
 
 		if( IsNoclipping )
 		{

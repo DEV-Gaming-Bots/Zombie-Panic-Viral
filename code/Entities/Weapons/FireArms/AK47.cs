@@ -23,6 +23,7 @@ public partial class AK47 : Weapon
 	public override float ReloadTime => 3.25f;
 	public override float EmptyReloadTime => 4.25f;
 	public override float UnloadTime => 5.75f;
+	public override AmmoEnum AmmoType => AmmoEnum.Rifle;
 
 	//Setup
 	public override float TimeToEquip => 1.15f;
@@ -54,4 +55,5 @@ public partial class AK47 : Weapon
 	public override Angles AvoidanceAngleOffset => new Angles( 10, 0, 0 );
 	public override Vector3 CrouchPositionOffset => new Vector3( -5, 0, 0 );
 	public override Angles CrouchAngleOffset => new Angles( 0, 0, 0 );
+	public override TypeEnum WeaponType => TypeEnum.Rifle;
 }

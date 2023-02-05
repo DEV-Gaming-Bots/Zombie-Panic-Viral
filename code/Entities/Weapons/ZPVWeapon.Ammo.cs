@@ -98,6 +98,10 @@ public partial class Weapon
 
 		if ( ReloadLock ) return false;
 
+		if ( AmmoCount <= 0 ) return false;
+
+		if ( IsMelee ) return false;
+
 		return Input.Down( InputButton.Reload );
 	}
 

@@ -5,6 +5,23 @@ public partial class ZPVGame
 {
 	public static bool Debugging { get; protected set; }
 
+	[ConCmd.Server("zpv.modeltype")]
+	public static void SetModelType(int index)
+	{
+		var player = ConsoleSystem.Caller.Pawn as PlayerPawn;
+		if ( player == null ) return;
+
+		if ( index < 0 ) return;
+
+		index--;
+
+		switch (index)
+		{
+			case 0: player.Survivor = PlayerPawn.SurvivorType.Eugene; break;
+			case 1: player.Survivor = PlayerPawn.SurvivorType.Jessica; break;
+		}
+	}
+
 	[ConCmd.Client("zpv.music", CanBeCalledFromServer = true)]
 	public static void ToggleMusicCMD(bool toggle)
 	{
@@ -19,6 +36,14 @@ public partial class ZPVGame
 	{
 		Debugging = toggle;
 		Log.Info( $"Debug mode is {Debugging}" );
+	}
+
+	[ConCmd.Server( "zpv.round.get" )]
+	public static void GetRoundStatusCMD()
+	{
+		//if ( !Debugging ) return;
+
+		Log.Info( StaticStatus );
 	}
 
 	[ConCmd.Server("zpv.entity.create")]
