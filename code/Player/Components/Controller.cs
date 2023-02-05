@@ -36,6 +36,11 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 	[Net, Predicted] public float CurrentEyeHeight { get; set; } = 64f;
 	public PlayerPawn Player => Entity;
 
+	protected override void OnActivate()
+	{
+		base.OnActivate();
+	}
+
 	[ConCmd.Server("noclip")]
 	public static void DoNoclip()
 	{
@@ -95,11 +100,21 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 			end += Vector3.Up * liftHead;
 		}
 
+		string[] tags = new string[3];
+
+		tags[0] = "solid";
+		tags[1] = "playerclip";
+
+		if ( Player is SurvivorPawn )
+			tags[2] = "zombie";
+		else if ( Player is ZombiePawn )
+			tags[2] = "survivor";
+
 		var tr = Trace.Ray( start, end )
-					.Size( mins, maxs )
-					.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
-					.Ignore( Player )
-					.Run();
+			.Size( mins, maxs )
+			.WithAnyTags( tags )
+			.Ignore( Player )
+			.Run();
 
 		return tr;
 	}
@@ -219,8 +234,9 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 	{
 		MoveHelper mover = new MoveHelper( Position, Velocity );
 		mover.Trace = mover.Trace.Size( Hull )
-			.Ignore( Player )
-			.WithoutTags( "player" );
+			.Ignore( Player );
+
+		//Log.Info( Hull );
 
 		mover.MaxStandableAngle = groundAngle;
 
@@ -234,8 +250,8 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 	{
 		MoveHelper mover = new MoveHelper( Position, Velocity );
 		mover.Trace = mover.Trace.Size( Hull )
-			.Ignore( Player )
-			.WithoutTags( "player" );
+			.Ignore( Player );
+
 		mover.MaxStandableAngle = groundAngle;
 
 		mover.TryMove( Time.Delta );
@@ -261,7 +277,7 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 		Velocity += new Vector3( 0, 0, BaseVelocity.z ) * Time.Delta;
 		BaseVelocity = BaseVelocity.WithZ( 0 );
 
-		var groundedAtStart = GroundEntity.IsValid();
+		var groundedAtStart = GroundEntity.IsValid() ;
 		if ( groundedAtStart )
 			return;
 
@@ -271,7 +287,9 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 
 		Accelerate( wishdir, wishspeed, AirControl, AirAcceleration );
 		Velocity += BaseVelocity;
+
 		Move();
+
 		Velocity -= BaseVelocity;
 		Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 	}
@@ -301,6 +319,7 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 	public virtual void Simulate( IClient cl )
 	{
 		SimulateEyes();
+
 
 		if( IsNoclipping )
 		{
@@ -400,6 +419,13 @@ public partial class Controller : EntityComponent<PlayerPawn>, ISingletonCompone
 
 		var angle = Vector3.GetAngle( Vector3.Up, pm.Normal );
 		CurrentGroundAngle = angle;
+
+		if ( pm.Entity != null && pm.Entity.GetType() != Player.GetType() )
+		{
+			bMoveToEndPos = false;
+			UpdateGroundEntity( pm );
+			return;
+		}
 
 		if ( pm.Entity == null || Vector3.GetAngle( Vector3.Up, pm.Normal ) > GroundAngle )
 		{

@@ -1,5 +1,8 @@
 ﻿namespace ZPViral.Weapons.FireArms;
 
+[Library( "zpv_weapon_usp" ), Title( "USP" ), Category( "Weapon" )]
+[EditorModel( "models/weapons/firearms/w_usp.vmdl" )]
+[HammerEntity]
 public partial class USP : Weapon
 {
 	public override Model ViewModel => Model.Load( "models/weapons/firearms/v_usp.vmdl" );
@@ -18,6 +21,7 @@ public partial class USP : Weapon
 	public override int DefaultAmmo => 15;
 	public override int MaximumAmmo => 15;
 	public override float ReloadTime => 2.65f;
+	public override float UnloadTime => 3.75f;
 
 	//Setup
 	public override float TimeToEquip => 0.75f;

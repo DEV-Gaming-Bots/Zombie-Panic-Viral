@@ -1,5 +1,8 @@
 ﻿namespace ZPViral.Weapons.FireArms;
 
+[Library( "zpv_weapon_machete" ), Title( "Machete" ), Category( "Weapon" )]
+[EditorModel( "models/weapons/firearms/w_machete.vmdl" )]
+[HammerEntity]
 public partial class Machete : Weapon
 {
 	public override Model ViewModel => Model.Load( "models/weapons/melee/v_machete.vmdl" );

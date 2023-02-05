@@ -19,6 +19,7 @@ public partial class Weapon
 		}
 
 		if ( Tags.Has( "reloading" ) ) return false;
+		if ( Tags.Has( "unloading" ) ) return false;
 
 		return TimeUntilCanFire >= FireDelay;
 	}
@@ -186,8 +187,6 @@ public partial class Weapon
 				.UsingTraceResult( tr )
 				.WithAttacker( Player )
 				.WithWeapon( this );
-
-		Log.Info( damageInfo.Damage );
 
 		tr.Entity.TakeDamage( damageInfo );
 

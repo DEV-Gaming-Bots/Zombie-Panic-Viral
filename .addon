@@ -30,7 +30,8 @@
         "ladder": "Ignore",
         "water": "Trigger",
         "survivor": "Collide",
-        "zombie": "Collide"
+        "zombie": "Collide",
+        "zpvpawn": "Trigger"
       },
       "Pairs": [
         {

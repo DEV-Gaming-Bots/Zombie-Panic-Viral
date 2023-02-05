@@ -12,12 +12,22 @@ public partial class Weapon
 		get => AmmoCount >= (AllowChamber ? MaximumAmmo + 1 : MaximumAmmo);
 	}
 
+	public bool IsEmpty
+	{
+		get => AmmoCount == 0;
+	}
+
 	public void Fill()
 	{
 		if ( AmmoCount > 0 )
 			AmmoCount = MaximumAmmo + 1;
 		else
 			AmmoCount = MaximumAmmo;
+	}
+
+	public void Empty()
+	{
+		AmmoCount = 0;
 	}
 
 	public bool HasEnoughAmmo( int amount = 1 )
@@ -36,6 +46,40 @@ public partial class Weapon
 		return false;
 	}
 
+	/// <summary>
+	/// Unloading
+	/// </summary>
+	protected void DoUnload(PlayerPawn player)
+	{
+		player?.SetAnimParameter( "b_reload", true );
+		Tags.Set( "unloading", true );
+
+		Input.SuppressButton( InputButton.Reload );
+
+		TimeUntilReloaded = UnloadTime;
+		ReloadLock = true;
+
+		using ( Prediction.Off() )
+			StartUnloadingEffects( To.Single( player.Client ) );
+	}
+
+	protected void FinishUnloading( PlayerPawn player )
+	{
+		Tags.Set( "unloading", false );
+		Empty();
+
+		using ( Prediction.Off() )
+			FinishUnloadEffects( To.Single( Player.Client ) );
+	}
+
+
+	[ClientRpc]
+	public static void StartUnloadingEffects()
+	{
+		WeaponViewModel.Current?.SetAnimParameter( "unload", true );
+		ArmVM.Current?.SetAnimParameter( "unload", true );
+	}
+
 	/////
 	/// Reloading
 	/////
@@ -45,15 +89,25 @@ public partial class Weapon
 
 		if ( ReloadLock ) return false;
 
-		return Input.Pressed( InputButton.Reload );
+		return true;
 	}
+
+	protected bool CanUnload( PlayerPawn player )
+	{
+		if ( TimeSinceActivated < TimeToEquip ) return false;
+
+		if ( ReloadLock ) return false;
+
+		return Input.Down( InputButton.Reload );
+	}
+
 
 	protected void DoReload( PlayerPawn player )
 	{
 		if ( IsFull )
 			return;
 
-		TimeUntilReloaded = ReloadTime;
+		TimeUntilReloaded = IsEmpty ? EmptyReloadTime : ReloadTime;
 		ReloadLock = true;
 
 		StartReloading();
@@ -82,6 +136,18 @@ public partial class Weapon
 
 		using ( Prediction.Off() )
 			FinishReloadEffects( To.Single( Player.Client ) );
+	}
+
+	[ClientRpc]
+	public static void FinishUnloadEffects()
+	{
+		//Fake firing for weapons such as the pistols slide action
+		//This is so it doesn't slide in forwards
+		WeaponViewModel.Current?.SetAnimParameter( "fire", true );
+		ArmVM.Current?.SetAnimParameter( "fire", true );
+
+		WeaponViewModel.Current?.SetAnimParameter( "empty", true );
+		ArmVM.Current?.SetAnimParameter( "empty", true );
 	}
 
 	[ClientRpc]

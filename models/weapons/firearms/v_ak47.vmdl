@@ -344,6 +344,45 @@
 					{
 						_class = "AnimFile"
 						name = "unload"
+						children = 
+						[
+							{
+								_class = "AnimEvent"
+								event_class = "AE_CL_PLAYSOUND"
+								event_frame = 38
+								event_keys = 
+								{
+									name = "sound/weapons/ak47/ak47_clipout_unload.sound"
+									stop_on_seq_change = false
+									use_layer_sequence = false
+									tags = ""
+								}
+							},
+							{
+								_class = "AnimEvent"
+								event_class = "AE_CL_PLAYSOUND"
+								event_frame = 67
+								event_keys = 
+								{
+									name = "sound/weapons/ak47/ak47_boltback_unload.sound"
+									stop_on_seq_change = false
+									use_layer_sequence = false
+									tags = ""
+								}
+							},
+							{
+								_class = "AnimEvent"
+								event_class = "AE_CL_PLAYSOUND"
+								event_frame = 128
+								event_keys = 
+								{
+									name = "sound/weapons/ak47/ak47_clipin.sound"
+									stop_on_seq_change = false
+									use_layer_sequence = false
+									tags = ""
+								}
+							},
+						]
 						activity_name = ""
 						activity_weight = 1
 						weight_list_name = ""

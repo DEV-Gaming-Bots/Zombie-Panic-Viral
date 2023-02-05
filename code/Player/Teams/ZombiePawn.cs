@@ -4,19 +4,20 @@ public partial class ZombiePawn : PlayerPawn
 {
 	public override void SetSpawnPosition()
 	{
-		var spawnpoint = All.OfType<SpawnPoint>().OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
+		var spawnpoint = All.OfType<ZPVSpawn>().Where( x => x.TeamSpawnpoint == ZPVSpawn.TeamSpawnEnum.Zombie )
+			.OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
 
 		if ( spawnpoint != null )
 		{
 			var tx = spawnpoint.Transform;
-			tx.Position = tx.Position + Vector3.Up * 25.0f;
 			Transform = tx;
 			ResetInterpolation();
 		}
 	}
 	public override void CreateHull()
 	{
-		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 72 ) );
+		//SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
 		base.CreateHull();
 	}

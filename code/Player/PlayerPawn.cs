@@ -1,4 +1,6 @@
-﻿namespace ZPViral.Player;
+﻿using Sandbox;
+
+namespace ZPViral.Player;
 
 public partial class PlayerPawn : AnimatedEntity
 {
@@ -11,8 +13,9 @@ public partial class PlayerPawn : AnimatedEntity
 	[BindComponent] public PlayerAnimator Animator { get; }
 	public DamageInfo LastDamage { get; protected set; }
 	public Weapon ActiveWeapon => Inventory?.ActiveWeapon;
+	public bool ShouldPlayMusic { get; set; } = true;
 
-	public Vector3 EyePosition 
+	public Vector3 EyePosition
 	{
 		get => Transform.PointToWorld( EyeLocalPosition );
 		set => EyeLocalPosition = Transform.PointToLocal( value );
@@ -44,9 +47,11 @@ public partial class PlayerPawn : AnimatedEntity
 			ResetInterpolation();
 		}
 	}
-	
+
 	public virtual void CreateHull()
 	{
+		Tags.Add( "zpvpawn" );
+
 		EnableHitboxes = true;
 		EnableLagCompensation = true;
 		EnableAllCollisions = true;
@@ -84,6 +89,11 @@ public partial class PlayerPawn : AnimatedEntity
 		Controller?.Simulate( cl );
 		Animator?.Simulate( cl );
 		Inventory?.Simulate( cl );
+
+		if ( Game.IsClient ) 
+		{
+			SimulateMusic( ShouldPlayMusic );
+		}
 	}
 
 	public override void FrameSimulate( IClient cl )
@@ -150,6 +160,26 @@ public partial class PlayerPawn : AnimatedEntity
 	{
 		await GameTask.DelaySeconds( 7.5f );
 		Spawn();
+	}
+
+	Sound music;
+
+	public void SimulateMusic( bool shouldPlay )
+	{
+		if(!shouldPlay)
+		{
+			music.Stop();
+			return;
+		}
+
+		if ( music.Finished )
+			music = Sound.FromScreen( "music_randomtrack" );
+	}
+
+	[ClientRpc]
+	public void PlaySoundClientside(string path)
+	{
+		Sound.FromScreen( path );
 	}
 
 	public override void OnKilled()

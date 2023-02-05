@@ -28,6 +28,8 @@ public partial class Weapon : AnimatedEntity
 	public virtual int DefaultAmmo => 9;
 	public virtual int MaximumAmmo => 9;
 	public virtual float ReloadTime => 2.0f;
+	public virtual float EmptyReloadTime => 2.5f;
+	public virtual float UnloadTime => 2.5f;
 
 	//Setup
 	public virtual float TimeToEquip => 1.0f;

@@ -114,16 +114,35 @@ public partial class Weapon : AnimatedEntity, IUse
 		ArmsVMEntity = null;
 	}
 
+	TimeUntil timeToUnload;
+
 	public override void Simulate( IClient cl )
 	{
 		SimulateRecoil(cl, Player);
 
-		if ( CanReload( Player ) )
-			DoReload(Player);
-
-		if( ReloadLock && TimeUntilReloaded )
+		if ( CanUnload( Player ) )
 		{
-			FinishReloading( Player );
+			if ( timeToUnload < -.1f )
+				timeToUnload = 0.5f;
+
+			if ( timeToUnload <= 0.0f )
+				DoUnload( Player );
+
+			return;
+		} 
+		else if ( Input.Released(InputButton.Reload) && CanReload( Player ) )
+		{
+			DoReload( Player );
+			timeToUnload = -.1f;
+		}
+
+		if( ReloadLock && TimeUntilReloaded <= 0.0f )
+		{
+			if ( Tags.Has( "reloading" ) )
+				FinishReloading( Player );
+			else if ( Tags.Has( "unloading" ) )
+				FinishUnloading( Player );
+
 			ReloadLock = false;
 		}
 

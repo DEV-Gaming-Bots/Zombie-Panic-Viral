@@ -4,6 +4,7 @@ public partial class PlayerPawn
 {
 	public enum TeamEnum
 	{
+		Unassigned,
 		Spectator,
 		Survivor,
 		Infected,

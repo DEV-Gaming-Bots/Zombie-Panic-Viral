@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZPViral.Player;
+﻿namespace ZPViral.Player;
 
 public partial class SurvivorPawn : PlayerPawn
 {
@@ -28,9 +22,23 @@ public partial class SurvivorPawn : PlayerPawn
 		timeInfection = 20.0f;
 	}
 
+	public override void SetSpawnPosition()
+	{
+		var spawnpoint = All.OfType<ZPVSpawn>().Where(x => x.TeamSpawnpoint == ZPVSpawn.TeamSpawnEnum.Survivor)
+			.OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
+
+		if ( spawnpoint != null )
+		{
+			var tx = spawnpoint.Transform;
+			Transform = tx;
+			ResetInterpolation();
+		}
+	}
+
 	public override void CreateHull()
 	{
-		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 72 ) );
+		//SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 	
 		base.CreateHull();
 	}

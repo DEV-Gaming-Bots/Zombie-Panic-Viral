@@ -5,6 +5,15 @@ public partial class ZPVGame
 {
 	public static bool Debugging { get; protected set; }
 
+	[ConCmd.Client("zpv.music", CanBeCalledFromServer = true)]
+	public static void ToggleMusicCMD(bool toggle)
+	{
+		var player = ConsoleSystem.Caller.Pawn as PlayerPawn;
+		if ( player == null ) return;
+
+		player.ShouldPlayMusic = toggle;
+	}
+
 	[ConCmd.Admin("zpv.debug")]
 	public static void ToggleDebug(bool toggle)
 	{
@@ -52,9 +61,10 @@ public partial class ZPVGame
 
 		switch ( team )
 		{
-			case 0: UpdatePawn( caller, PlayerPawn.TeamEnum.Spectator ); break;
+			case 0: UpdatePawn( caller, PlayerPawn.TeamEnum.Unassigned ); break;
 			case 1: UpdatePawn( caller, PlayerPawn.TeamEnum.Survivor ); break;
 			case 2: UpdatePawn( caller, PlayerPawn.TeamEnum.Zombie ); break;
+			case 3: UpdatePawn( caller, PlayerPawn.TeamEnum.Spectator ); break;
 		}
 	}
 }

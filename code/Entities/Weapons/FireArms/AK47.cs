@@ -1,5 +1,8 @@
 ﻿namespace ZPViral.Weapons.FireArms;
 
+[Library("zpv_weapon_ak47"), Title("AK-47"), Category("Weapon")]
+[EditorModel( "models/weapons/firearms/w_ak47.vmdl" )]
+[HammerEntity]
 public partial class AK47 : Weapon
 {
 	public override Model ViewModel => Model.Load( "models/weapons/firearms/v_ak47.vmdl" );
@@ -18,6 +21,8 @@ public partial class AK47 : Weapon
 	public override int DefaultAmmo => 30;
 	public override int MaximumAmmo => 30;
 	public override float ReloadTime => 3.25f;
+	public override float EmptyReloadTime => 4.25f;
+	public override float UnloadTime => 5.75f;
 
 	//Setup
 	public override float TimeToEquip => 1.15f;
