@@ -20,11 +20,12 @@ public partial class AK47 : Weapon
 	public override float ReloadTime => 3.25f;
 
 	//Setup
-	public override float TimeToEquip => 1.5f;
+	public override float TimeToEquip => 1.15f;
 
 	//Sounds
-	public override string FireSound { get; set; } = "ak47_fire";
-	public override string DryFireSound { get; set; } = "ak47_dryfire";
+	public override string DrawSound => "ak47_draw";
+	public override string FireSound => "ak47_fire";
+	public override string DryFireSound => "ak47_dryfire";
 
 	//Offsets + Scale
 	public override float VelocityScale => 0.35f;

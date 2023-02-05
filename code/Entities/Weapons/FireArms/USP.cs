@@ -20,9 +20,10 @@ public partial class USP : Weapon
 	public override float ReloadTime => 2.65f;
 
 	//Setup
-	public override float TimeToEquip => 1.0f;
+	public override float TimeToEquip => 0.75f;
 
-	//Sounds
+	//Sounds	
+	public override string DrawSound => "usp_draw";
 	public override string FireSound { get; set; } = "usp_fire";
 	public override string DryFireSound { get; set; } = "usp_dryfire";
 

@@ -37,4 +37,21 @@ public partial class ZPVGame : GameManager
 		client.Pawn = pawn;
 		pawn.Spawn();
 	}
+
+	public static void UpdatePawn( IClient client, PlayerPawn.TeamEnum newTeam)
+	{
+		var oldPawn = client.Pawn;
+
+		switch (newTeam)
+		{
+			case PlayerPawn.TeamEnum.Survivor:
+				client.Pawn = new SurvivorPawn();
+				break;
+			case PlayerPawn.TeamEnum.Zombie:
+				client.Pawn = new ZombiePawn();
+				break;
+		}
+
+		oldPawn?.Delete();
+	}
 }

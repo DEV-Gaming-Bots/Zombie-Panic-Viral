@@ -32,7 +32,7 @@ public partial class PlayerPawn : AnimatedEntity
 
 	}
 
-	public void SetSpawnPosition()
+	public virtual void SetSpawnPosition()
 	{
 		var spawnpoint = All.OfType<SpawnPoint>().OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
 
@@ -44,11 +44,18 @@ public partial class PlayerPawn : AnimatedEntity
 			ResetInterpolation();
 		}
 	}
+	
+	public virtual void CreateHull()
+	{
+		EnableHitboxes = true;
+		EnableLagCompensation = true;
+		EnableAllCollisions = true;
+	}
 
 	public override void Spawn()
 	{
+		//TEMPORARY
 		SetModel( "models/citizen/citizen.vmdl" );
-		Tags.Add( "player" );
 
 		Components.Create<Controller>();
 		Components.Create<Inventory>();
@@ -131,10 +138,18 @@ public partial class PlayerPawn : AnimatedEntity
 		tr.Surface.DoFootstep( this, tr, foot, volume );
 	}
 
-	private async void AsyncRespawn()
+	public int ScaleHitDamage(Hitbox hitbox)
 	{
-		await GameTask.DelaySeconds( 3f );
-		//Respawn();
+		if ( hitbox.HasTag( "head" ) )
+			return 3;
+
+		return 1;
+	}
+
+	public async void AsyncRespawn()
+	{
+		await GameTask.DelaySeconds( 7.5f );
+		Spawn();
 	}
 
 	public override void OnKilled()
@@ -143,9 +158,14 @@ public partial class PlayerPawn : AnimatedEntity
 		{
 			CreateRagdoll( Controller.Velocity, LastDamage.Position, LastDamage.Force,
 				LastDamage.BoneIndex, LastDamage.HasTag( "bullet" ), LastDamage.HasTag( "blast" ) );
+			
+			PhysicsClear();
 
 			LifeState = LifeState.Dead;
+
 			EnableAllCollisions = false;
+			EnableHitboxes = false;
+			EnableLagCompensation = false;
 			EnableDrawing = false;
 
 			Controller.Remove();

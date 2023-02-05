@@ -1,6 +1,6 @@
 ﻿namespace ZPViral.Weapons;
 
-public partial class Weapon : AnimatedEntity
+public partial class Weapon
 {
 	[Net] public int AmmoCount { get; set; }
 
@@ -41,6 +41,8 @@ public partial class Weapon : AnimatedEntity
 	/////
 	protected bool CanReload( PlayerPawn player )
 	{
+		if ( TimeSinceActivated < TimeToEquip ) return false;
+
 		if ( ReloadLock ) return false;
 
 		return Input.Pressed( InputButton.Reload );

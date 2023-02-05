@@ -23,6 +23,7 @@ public partial class Weapon : AnimatedEntity
 	public virtual bool IsAutomatic => false;
 
 	//Ammo + Reload
+	public virtual bool IsMelee => false;
 	public virtual bool AllowChamber => true;
 	public virtual int DefaultAmmo => 9;
 	public virtual int MaximumAmmo => 9;
@@ -32,8 +33,11 @@ public partial class Weapon : AnimatedEntity
 	public virtual float TimeToEquip => 1.0f;
 
 	//Sounds
+	public virtual string DrawSound { get; set; }
 	public virtual string FireSound { get; set; }
 	public virtual string DryFireSound { get; set; }
+	public virtual string SwingSound { get; set; }
+	public virtual string AttackSound { get; set; }
 
 	//Offsets + Scale
 	public virtual float VelocityScale => 0.1f;

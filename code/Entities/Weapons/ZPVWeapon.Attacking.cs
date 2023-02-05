@@ -1,12 +1,12 @@
 ﻿namespace ZPViral.Weapons;
 
-public partial class Weapon : AnimatedEntity
+public partial class Weapon
 {
-	public TimeUntil TimeUntilCanFire { get; set; }
+	public TimeSince TimeUntilCanFire { get; protected set; }
 
 	protected bool CanFire( PlayerPawn player )
 	{
-		if ( TimeUntilCanFire > 0 ) return false;
+		if ( TimeSinceActivated < TimeToEquip ) return false;
 		if ( TimeUntilReloaded > 0 ) return false;
 
 		if( IsAutomatic )
@@ -20,7 +20,7 @@ public partial class Weapon : AnimatedEntity
 
 		if ( Tags.Has( "reloading" ) ) return false;
 
-		return TimeSinceActivated > FireDelay;
+		return TimeUntilCanFire >= FireDelay;
 	}
 
 	protected void Fire( PlayerPawn player )
@@ -29,42 +29,110 @@ public partial class Weapon : AnimatedEntity
 
 		if ( Game.IsServer )
 		{
-			if ( AmmoCount > 0 )
-				player.PlaySound( FireSound );
-			else
-				player.PlaySound( DryFireSound );
+			if ( IsMelee )
+			{
+				var hit = SwingMelee( BulletForce, BulletSize, BaseDamage, BulletRange );
 
-			DoShootEffects( To.Single( player ), AmmoCount <= 0 );
+				if ( hit )
+					player.PlaySound( AttackSound );
+				else
+					player.PlaySound( SwingSound );
+
+				DoMeleeEffects( To.Single( Player.Client ), hit );
+			} 
+			else
+			{
+				if ( AmmoCount > 0 )
+				{
+					player.PlaySound( FireSound );
+					DoParticleEffects( To.Single( player.Client ) );
+				}
+				else
+					player.PlaySound( DryFireSound );
+
+				DoShootEffects( To.Single( player ), AmmoCount <= 0 );
+			}
+
 		}
 
-		TimeSinceActivated = 0;
+		TimeUntilCanFire = 0;
 
-		if ( AmmoCount <= 0 )
-			return;
+		if(!IsMelee)
+		{
+			if ( AmmoCount <= 0 )
+				return;
 
-		TakeAmmo( 1 );
-		AddRecoil();
-		ShootBullet( BulletSpread, BulletForce, BulletSize, BulletCount, BulletRange );
+			ShootBullet( BulletSpread, BulletForce, BulletSize, BulletCount, BulletRange );
+			TakeAmmo( 1 );
+			AddRecoil();
+		} 
+		else
+		{
+			AddRecoil();
+		}
+
 	}
 
 	[ClientRpc]
-	public static void DoShootEffects(bool isEmpty)
+	public static void DoMeleeEffects( bool hit )
 	{
 		Game.AssertClient();
 
-		WeaponViewModel.Current?.SetAnimParameter( "empty", isEmpty );
-		WeaponViewModel.Current?.SetAnimParameter( "fire", true );
+		int maxHit = WeaponViewModel.Current.GetAnimParameterInt( "max_hits" );
+		int maxMiss = WeaponViewModel.Current.GetAnimParameterInt( "max_misses" );
 
+		int randHit = Game.Random.Int( 1, maxHit );
+		int randMiss = Game.Random.Int( 1, maxMiss );
+
+		WeaponViewModel.Current?.SetAnimParameter( "hit", hit );
+		WeaponViewModel.Current?.SetAnimParameter( "hit_ints", randHit );
+
+		WeaponViewModel.Current?.SetAnimParameter( "miss", !hit );
+		WeaponViewModel.Current?.SetAnimParameter( "miss_ints", randMiss );
+
+		ArmVM.Current?.SetAnimParameter( "hit", hit );
+		ArmVM.Current?.SetAnimParameter( "hit_ints", randHit );
+
+		ArmVM.Current?.SetAnimParameter( "miss", !hit );
+		ArmVM.Current?.SetAnimParameter( "miss_ints", randMiss );
+	}
+
+	[ClientRpc]
+	public static void DoParticleEffects()
+	{
+		Game.AssertClient();
+
+		Particles.Create("particles/pistol_muzzleflash.vpcf", WeaponViewModel.Current, "muzzle" );
+	}
+
+	[ClientRpc]
+	public static void DoShootEffects( bool isEmpty )
+	{
+		Game.AssertClient();
+
+		int maxFires = WeaponViewModel.Current.GetAnimParameterInt( "max_ints" );
+
+		if( maxFires != 0 )
+		{
+			int randFire = Game.Random.Int( 1, maxFires );
+
+			WeaponViewModel.Current?.SetAnimParameter( "fire_ints", randFire );
+			ArmVM.Current?.SetAnimParameter( "fire_ints", randFire );
+		}
+
+		WeaponViewModel.Current?.SetAnimParameter( "fire", true );
 		ArmVM.Current?.SetAnimParameter( "fire", true );
+
+		WeaponViewModel.Current?.SetAnimParameter( "empty", isEmpty );
 		ArmVM.Current?.SetAnimParameter( "empty", isEmpty );
 	}
 
 
-	protected TraceResult DoTraceBullet( Vector3 start, Vector3 end, float radius )
+	protected TraceResult DoTraceAttack( Vector3 start, Vector3 end, float radius )
 	{
 		return Trace.Ray( start, end )
 		.UseHitboxes()
-		.WithAnyTags( "solid", "player", "glass" )
+		.WithAnyTags( "solid", "zombie", "glass" )
 		.Ignore( Owner )
 		.Size( radius )
 		.Run();
@@ -87,7 +155,7 @@ public partial class Weapon : AnimatedEntity
 		float curHits = 0;
 		var hits = new List<TraceResult>();
 
-		var tr = DoTraceBullet( start, end, radius );
+		var tr = DoTraceAttack( start, end, radius );
 		if ( tr.Hit )
 		{
 			if ( curHits > 1 )
@@ -99,6 +167,31 @@ public partial class Weapon : AnimatedEntity
 		damage *= dist;
 
 		return hits;
+	}
+
+	public bool SwingMelee(float force, float hitSize, float damage, float range)
+	{
+		Game.SetRandomSeed( Time.Tick );
+
+		var tr = DoTraceAttack( Player.AimRay.Position, Player.AimRay.Position + Player.AimRay.Forward * range, hitSize );
+		
+		if ( !tr.Hit ) return false;
+
+		tr.Surface.DoBulletImpact( tr );
+
+		if ( !Game.IsServer ) return false;
+		if ( !tr.Entity.IsValid() ) return false;
+
+		var damageInfo = DamageInfo.FromBullet( tr.EndPosition, Player.AimRay.Forward * 100 * force, damage )
+				.UsingTraceResult( tr )
+				.WithAttacker( Player )
+				.WithWeapon( this );
+
+		Log.Info( damageInfo.Damage );
+
+		tr.Entity.TakeDamage( damageInfo );
+
+		return true;
 	}
 
 	public void ShootBullet( float spread, float force, float bulletSize, int bulletCount = 1, float bulletRange = 5000f )

@@ -25,4 +25,36 @@ public partial class ZPVGame
 
 		ent.Position = player.GetEyeTraceResult( 64.0f ).EndPosition;
 	}
+
+	[ConCmd.Server( "zpv.infect" )]
+	public static void InfectCMD()
+	{
+		if ( !Debugging ) return;
+
+		var survivor = ConsoleSystem.Caller.Pawn as SurvivorPawn;
+		if ( survivor == null ) return;
+
+		survivor.Infect();
+	}
+	
+	[ConCmd.Server( "zpv.setteam" )]
+	public static void SetTeamCMD(int team, string targetName = "")
+	{
+		if ( !Debugging ) return;
+
+		var caller = ConsoleSystem.Caller;
+		if ( caller == null ) return;
+
+		if ( !string.IsNullOrEmpty( targetName ) )
+			caller = Game.Clients.Where( x => x.Name.ToLower().Contains( targetName ) ).FirstOrDefault();
+
+		if ( caller == null ) return;
+
+		switch ( team )
+		{
+			case 0: UpdatePawn( caller, PlayerPawn.TeamEnum.Spectator ); break;
+			case 1: UpdatePawn( caller, PlayerPawn.TeamEnum.Survivor ); break;
+			case 2: UpdatePawn( caller, PlayerPawn.TeamEnum.Zombie ); break;
+		}
+	}
 }

@@ -77,6 +77,15 @@ public partial class PlayerPawn
 		return true;
 	}
 
+	protected bool CanUseAsTeamMember(Entity e)
+	{
+		if ( e == null ) return false;
+
+		if ( e is Weapon && Client.Pawn is not SurvivorPawn ) return false;
+
+		return true;
+	}
+
 	/// <summary>
 	/// Find a usable entity for this player to use
 	/// </summary>
@@ -106,6 +115,8 @@ public partial class PlayerPawn
 		}
 
 		if ( !IsValidUseEntity( ent ) ) return null;
+
+		if ( !CanUseAsTeamMember( ent ) ) return null;
 
 		return ent;
 	}

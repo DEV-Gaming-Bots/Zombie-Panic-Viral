@@ -54,11 +54,14 @@ public partial class ArmVM: AnimatedEntity
 	//2 = Rifle
 	protected int GetWeaponAnimEnum()
 	{
-		if ( Weapon is USP )
+		if ( Weapon is Machete )
 			return 1;
 
-		if ( Weapon is AK47 )
+		if ( Weapon is USP )
 			return 2;
+
+		if ( Weapon is AK47 )
+			return 3;
 
 		return 0;
 	}

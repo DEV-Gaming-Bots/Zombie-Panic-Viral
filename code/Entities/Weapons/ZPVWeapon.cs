@@ -1,6 +1,4 @@
-﻿using Sandbox;
-
-namespace ZPViral.Weapons;
+﻿namespace ZPViral.Weapons;
 
 public partial class Weapon : AnimatedEntity, IUse
 {
@@ -10,6 +8,7 @@ public partial class Weapon : AnimatedEntity, IUse
 	public PlayerPawn Player => Owner as PlayerPawn;
 	[Net, Predicted] public bool IsActive { get; protected set; }
 	[Net, Predicted] public TimeSince TimeSinceActivated { get; protected set; }
+
 	public override void Spawn()
 	{
 		EnableHideInFirstPerson = true;
@@ -71,7 +70,9 @@ public partial class Weapon : AnimatedEntity, IUse
 
 		EnableDrawing = true;
 
-		TimeUntilCanFire = TimeToEquip;
+		TimeSinceActivated = 0;
+
+		Player.PlaySound( DrawSound );
 
 		if ( Game.IsServer )
 		{
