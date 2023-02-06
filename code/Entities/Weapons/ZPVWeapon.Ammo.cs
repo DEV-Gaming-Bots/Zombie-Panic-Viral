@@ -1,4 +1,7 @@
-﻿namespace ZPViral.Weapons;
+﻿using Sandbox;
+using System.Reflection.Emit;
+
+namespace ZPViral.Weapons;
 
 public partial class Weapon
 {
@@ -54,19 +57,55 @@ public partial class Weapon
 		player?.SetAnimParameter( "b_reload", true );
 		Tags.Set( "unloading", true );
 
-		Input.SuppressButton( InputButton.Reload );
-
 		TimeUntilReloaded = UnloadTime;
 		ReloadLock = true;
 
-		using ( Prediction.Off() )
-			StartUnloadingEffects( To.Single( player.Client ) );
+		bool interrupt = Input.Down( InputButton.PrimaryAttack );
+
+		if ( WeaponType == TypeEnum.Shotgun )
+		{
+			if(interrupt)
+			{
+				Tags.Set( "unloading", false );
+				ReloadLock = false;
+
+				using ( Prediction.Off() )
+					FinishUnloadEffects( To.Single( player.Client ) );
+
+				return;
+			}
+
+			if ( AmmoCount < 0 )
+			{
+				Tags.Set( "unloading", false );
+				ReloadLock = false;
+
+				AmmoCount = 0;
+
+				using ( Prediction.Off() )
+					FinishUnloadEffects( To.Single( player.Client ) );
+			}
+			else if ( AmmoCount >= 0 )
+			{
+				AmmoCount--;
+
+				using ( Prediction.Off() )
+					StartUnloadingEffects( To.Single( player.Client ) );
+			}
+		} 
+		else
+		{
+			using ( Prediction.Off() )
+				StartUnloadingEffects( To.Single( player.Client ) );
+		}
 	}
 
 	protected void FinishUnloading( PlayerPawn player )
 	{
 		Tags.Set( "unloading", false );
-		Empty();
+		
+		if ( WeaponType != TypeEnum.Shotgun )
+			Empty();
 
 		using ( Prediction.Off() )
 			FinishUnloadEffects( To.Single( Player.Client ) );
@@ -89,6 +128,8 @@ public partial class Weapon
 
 		if ( ReloadLock ) return false;
 
+		if ( IsFull ) return false;
+
 		return true;
 	}
 
@@ -105,16 +146,54 @@ public partial class Weapon
 		return Input.Down( InputButton.Reload );
 	}
 
-
 	protected void DoReload( PlayerPawn player )
 	{
-		if ( IsFull )
-			return;
-
 		TimeUntilReloaded = IsEmpty ? EmptyReloadTime : ReloadTime;
 		ReloadLock = true;
 
-		StartReloading();
+		if ( WeaponType == TypeEnum.Shotgun )
+		{
+			bool interrupt = Input.Down( InputButton.PrimaryAttack );
+
+			if(interrupt)
+			{
+				Tags.Set( "reloading", false );
+				ReloadLock = false;
+
+				using ( Prediction.Off() )
+					FinishReloadEffects( To.Single( player.Client ) );
+
+				return;
+			}
+
+			if( !Tags.Has("reloading") )
+				StartReloadShotgun();
+			else
+			{
+				if( AmmoCount >= MaximumAmmo )
+				{
+					ReloadLock = false;
+					FinishReloading(player);
+				} 
+				else if ( AmmoCount < MaximumAmmo )
+				{
+					AmmoCount++;
+					ShotgunReloadEffects();
+				}
+
+			}
+		}
+		else 
+			StartReloading();
+	}
+
+	protected void StartReloadShotgun()
+	{
+		Player?.SetAnimParameter( "b_reload", true );
+		Tags.Set( "reloading", true );
+
+		using ( Prediction.Off() )
+			StartReloadEffects( To.Single( Player.Client ), IsEmpty );
 	}
 
 	protected void StartReloading()
@@ -123,35 +202,48 @@ public partial class Weapon
 		Tags.Set( "reloading", true );
 
 		using ( Prediction.Off() )
-			StartReloadEffects( To.Single( Player.Client ) );
+			StartReloadEffects( To.Single( Player.Client ), IsEmpty );
 	}
 
 	[ClientRpc]
-	public static void StartReloadEffects()
+	public static void ShotgunReloadEffects()
 	{
 		WeaponViewModel.Current?.SetAnimParameter( "reload", true );
 		ArmVM.Current?.SetAnimParameter( "reload", true );
 	}
 
+	[ClientRpc]
+	public static void StartReloadEffects(bool isEmpty)
+	{
+		WeaponViewModel.Current?.SetAnimParameter( "reload", true );
+		ArmVM.Current?.SetAnimParameter( "reload", true );
+
+		WeaponViewModel.Current?.SetAnimParameter( "empty", isEmpty );
+		ArmVM.Current?.SetAnimParameter( "empty", isEmpty );
+	}
+
 	protected void FinishReloading( PlayerPawn player )
 	{
 		Tags.Set( "reloading", false );
-		Fill();
+		
+		if(WeaponType != TypeEnum.Shotgun)
+			Fill();
 
 		using ( Prediction.Off() )
-			FinishReloadEffects( To.Single( Player.Client ) );
+			FinishReloadEffects( To.Single( player.Client ) );
 	}
 
 	[ClientRpc]
 	public static void FinishUnloadEffects()
 	{
-		//Fake firing for weapons such as the pistols slide action
-		//This is so it doesn't slide in forwards
-		WeaponViewModel.Current?.SetAnimParameter( "fire", true );
-		ArmVM.Current?.SetAnimParameter( "fire", true );
+		//WeaponViewModel.Current?.SetAnimParameter( "fire", true );
+		//ArmVM.Current?.SetAnimParameter( "fire", true );
 
 		WeaponViewModel.Current?.SetAnimParameter( "empty", true );
 		ArmVM.Current?.SetAnimParameter( "empty", true );
+
+		WeaponViewModel.Current?.SetAnimParameter( "finishunload", true );
+		ArmVM.Current?.SetAnimParameter( "finishunload", true );
 	}
 
 	[ClientRpc]
@@ -159,5 +251,8 @@ public partial class Weapon
 	{
 		WeaponViewModel.Current?.SetAnimParameter( "empty", false );
 		ArmVM.Current?.SetAnimParameter( "empty", false );
+
+		WeaponViewModel.Current?.SetAnimParameter( "finishreload", true );
+		ArmVM.Current?.SetAnimParameter( "finishreload", true );
 	}
 }

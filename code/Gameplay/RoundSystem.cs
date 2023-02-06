@@ -193,7 +193,7 @@ public partial class ZPVGame
 		{
 			case 1: pistol = new USP(); break;
 			case 2: pistol = new Glock17(); break;
-			case 3: pistol = new Glock18(); break;
+			case 3: pistol = new Glock18c(); break;
 		}
 
 		return pistol;

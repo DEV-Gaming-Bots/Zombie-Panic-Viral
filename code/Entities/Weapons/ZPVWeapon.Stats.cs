@@ -30,6 +30,8 @@ public partial class Weapon : AnimatedEntity
 	public virtual float ReloadTime => 2.0f;
 	public virtual float EmptyReloadTime => 2.5f;
 	public virtual float UnloadTime => 2.5f;
+	public virtual float ShellReload => 1.0f;
+	public virtual float ShellUnload => 1.0f;
 
 	public enum AmmoEnum
 	{

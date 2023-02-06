@@ -138,7 +138,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -404,7 +404,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 624247698
@@ -481,7 +481,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -1024,6 +1024,27 @@
 			{
 				key = 
 				{
+					m_id = 152582633
+				}
+				value = 
+				{
+					_class = "CCommentAnimNode"
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2477.0, 707.0 ]
+					m_nNodeID = 
+					{
+						m_id = 152582633
+					}
+					m_networkMode = "ServerAuthoritative"
+					m_sNote = ""
+					m_commentText = ""
+					m_size = [ 512.0, 432.0 ]
+					m_color = [ 49, 139, 146, 255 ]
+				}
+			},
+			{
+				key = 
+				{
 					m_id = 323644548
 				}
 				value = 
@@ -1378,8 +1399,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 544.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 755.0 ]
 					m_nNodeID = 
 					{
 						m_id = 601846693
@@ -1400,8 +1421,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 736.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 947.0 ]
 					m_nNodeID = 
 					{
 						m_id = 602229859
@@ -1466,8 +1487,8 @@
 				value = 
 				{
 					_class = "CStateMachineAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2176.0, 656.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2173.0, 867.0 ]
 					m_nNodeID = 
 					{
 						m_id = 921678875
@@ -1568,7 +1589,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -1834,7 +1855,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 624247698
@@ -1911,7 +1932,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -3180,8 +3201,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 688.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 899.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1279431675
@@ -3353,8 +3374,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 784.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 995.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1385480065
@@ -3463,8 +3484,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 592.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 803.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1545506708
@@ -3719,8 +3740,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 832.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 1043.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1871073983
@@ -3837,7 +3858,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1124154916
@@ -3884,7 +3905,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1898152831
@@ -3931,7 +3952,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1608326759
@@ -3978,7 +3999,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 843378374
@@ -4262,7 +4283,7 @@
 				{
 					_class = "CStateMachineAnimNode"
 					m_sName = "Firing"
-					m_vecPosition = [ -704.0, 960.0 ]
+					m_vecPosition = [ -704.0, 944.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1951339947
@@ -4363,7 +4384,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1522338630
@@ -4410,7 +4431,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1728654780
@@ -4504,7 +4525,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1413427868
@@ -4615,7 +4636,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1522338630
@@ -4676,7 +4697,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 842021565
@@ -4753,7 +4774,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 485826692
@@ -4814,7 +4835,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 842021565
@@ -4878,7 +4899,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1436072542
@@ -4912,7 +4933,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1413427868
@@ -4976,7 +4997,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1728654780
@@ -5010,7 +5031,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1413427868
@@ -5257,8 +5278,8 @@
 				value = 
 				{
 					_class = "CSequenceAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ -2464.0, 640.0 ]
+					m_sName = "Glock 17 + 18c"
+					m_vecPosition = [ -2461.0, 851.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1998762441

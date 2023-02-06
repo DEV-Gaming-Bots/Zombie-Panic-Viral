@@ -138,7 +138,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -357,7 +357,7 @@
 											m_bIsFinished = true
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 1797685883
@@ -404,7 +404,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 624247698
@@ -481,7 +481,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -951,52 +951,6 @@
 			{
 				key = 
 				{
-					m_id = 54175832
-				}
-				value = 
-				{
-					_class = "CAddAnimNode"
-					m_sName = "Unnamed"
-					m_vecPosition = [ 240.0, 80.0 ]
-					m_nNodeID = 
-					{
-						m_id = 54175832
-					}
-					m_networkMode = "ClientSimulate"
-					m_sNote = ""
-					m_baseInput = 
-					{
-						m_nodeID = 
-						{
-							m_id = 36112198
-						}
-						m_outputID = 
-						{
-							m_id = 4294967295
-						}
-					}
-					m_additiveInput = 
-					{
-						m_nodeID = 
-						{
-							m_id = 2090479250
-						}
-						m_outputID = 
-						{
-							m_id = 4294967295
-						}
-					}
-					m_timingBehavior = "UseChild2"
-					m_flTimingBlend = 0.5
-					m_footMotionTiming = "Child1"
-					m_bResetBase = false
-					m_bResetAdditive = true
-					m_bApplyChannelsSeparately = true
-				}
-			},
-			{
-				key = 
-				{
 					m_id = 378063258
 				}
 				value = 
@@ -1069,7 +1023,7 @@
 				{
 					_class = "CSequenceAnimNode"
 					m_sName = "Unnamed"
-					m_vecPosition = [ -400.0, -144.0 ]
+					m_vecPosition = [ -400.0, -128.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1681470312
@@ -1102,7 +1056,7 @@
 					{
 						m_nodeID = 
 						{
-							m_id = 54175832
+							m_id = 36112198
 						}
 						m_outputID = 
 						{
@@ -1435,6 +1389,7 @@
 	m_previewModels = 
 	[
 		"models/weapons/firearms/v_glock.vmdl",
+		"models/weapons/firearms/v_glock18c.vmdl",
 	]
 	m_boneMergeModels = [  ]
 }

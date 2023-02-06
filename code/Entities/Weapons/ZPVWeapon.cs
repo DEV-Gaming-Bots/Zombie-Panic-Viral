@@ -99,8 +99,6 @@ public partial class Weapon : AnimatedEntity, IUse
 
 	Model GetPreferredArmModel()
 	{
-		Log.Info( Player.Survivor );
-
 		switch( Player.Survivor )
 		{
 			case PlayerPawn.SurvivorType.Eugene: return Model.Load( "models/arms/c_arms_eugene.vmdl" );
@@ -161,12 +159,23 @@ public partial class Weapon : AnimatedEntity, IUse
 
 		if( ReloadLock && TimeUntilReloaded <= 0.0f )
 		{
-			if ( Tags.Has( "reloading" ) )
-				FinishReloading( Player );
-			else if ( Tags.Has( "unloading" ) )
-				FinishUnloading( Player );
+			if( WeaponType == TypeEnum.Shotgun )
+			{
+				if ( Tags.Has( "reloading" ) )
+					DoReload( Player );
 
-			ReloadLock = false;
+				if ( Tags.Has( "unloading" ) )
+					DoUnload(Player);
+			}
+			else
+			{
+				if ( Tags.Has( "reloading" ) )
+					FinishReloading( Player );
+				else if ( Tags.Has( "unloading" ) )
+					FinishUnloading( Player );
+
+				ReloadLock = false;
+			}
 		}
 
 		if( CanFire(Player) )

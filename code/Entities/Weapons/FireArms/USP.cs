@@ -13,7 +13,7 @@ public partial class USP : Weapon
 	public override float BulletForce => 0.35f;
 	public override float BulletSize => 0.8f;
 	public override float BulletSpread => 0.05f;
-	public override float FireDelay => 0.195f;
+	public override float FireDelay => 0.125f;
 	public override bool IsAutomatic => false;
 
 	//Ammo + Reload

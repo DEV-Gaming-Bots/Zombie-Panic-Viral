@@ -58,7 +58,7 @@ public partial class ArmVM: AnimatedEntity
 		if ( Weapon is Machete )
 			return 1;
 
-		if ( Weapon is USP || Weapon is Glock17 || Weapon is Glock18 )
+		if ( Weapon is USP || Weapon is Glock17 || Weapon is Glock18c )
 			return 2;
 
 		if ( Weapon is AK47 )
@@ -72,7 +72,7 @@ public partial class ArmVM: AnimatedEntity
 		if ( Weapon is USP )
 			return 1;
 
-		if ( Weapon is Glock17 || Weapon is Glock18 )
+		if ( Weapon is Glock17 || Weapon is Glock18c )
 			return 2;
 
 		return 0;

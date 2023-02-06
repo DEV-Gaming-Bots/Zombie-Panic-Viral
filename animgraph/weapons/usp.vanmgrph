@@ -138,7 +138,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490
@@ -404,7 +404,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 624247698
@@ -481,7 +481,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.0
 									m_destState = 
 									{
 										m_id = 518345490

@@ -3,7 +3,7 @@
 [Library( "zpv_weapon_glock18c" ), Title( "Glock 18c" ), Category( "Weapon" )]
 [EditorModel( "models/weapons/firearms/w_glock18c.vmdl" )]
 [HammerEntity]
-public partial class Glock18 : Weapon
+public partial class Glock18c : Weapon
 {
 	public override Model ViewModel => Model.Load( "models/weapons/firearms/v_glock18c.vmdl" );
 	public override Model WorldModel => Model.Load( "models/weapons/firearms/w_glock18c.vmdl" );
@@ -13,13 +13,13 @@ public partial class Glock18 : Weapon
 	public override float BulletForce => 0.35f;
 	public override float BulletSize => 0.8f;
 	public override float BulletSpread => 0.05f;
-	public override float FireDelay => 0.195f;
+	public override float FireDelay => 0.105f;
 	public override bool IsAutomatic => true;
 
 	//Ammo + Reload
 	public override bool AllowChamber => true;
-	public override int DefaultAmmo => 15;
-	public override int MaximumAmmo => 15;
+	public override int DefaultAmmo => 17;
+	public override int MaximumAmmo => 17;
 	public override float ReloadTime => 2.65f;
 	public override float UnloadTime => 3.75f;
 	public override AmmoEnum AmmoType => AmmoEnum.Pistol;
