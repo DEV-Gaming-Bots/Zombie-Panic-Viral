@@ -86,6 +86,9 @@ public partial class SurvivorPawn : PlayerPawn
 
 		RenderColor = Color.White;
 
+		if( ServerSurvivor == SurvivorType.Random)
+		Survivor = SurvivorType.Random;
+
 		SetModel( "models/citizen/citizen.vmdl" );
 		Tags.Add( "survivor" );
 

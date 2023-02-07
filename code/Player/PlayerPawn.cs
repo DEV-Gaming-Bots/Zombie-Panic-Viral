@@ -1,6 +1,4 @@
-﻿using Sandbox;
-
-namespace ZPViral.Player;
+﻿namespace ZPViral.Player;
 
 public partial class PlayerPawn : AnimatedEntity
 {
@@ -32,11 +30,14 @@ public partial class PlayerPawn : AnimatedEntity
 
 	public enum SurvivorType
 	{
+		Random,
 		Eugene,
 		Jessica,
 	}
 
-	[Net] public SurvivorType Survivor { get; set; } = SurvivorType.Eugene;
+	[Net] public SurvivorType Survivor { get; set; }
+
+	public SurvivorType ServerSurvivor { get; set; } = SurvivorType.Random;
 
 	bool setView;
 	Angles setAngles;
@@ -52,6 +53,47 @@ public partial class PlayerPawn : AnimatedEntity
 		setView = true;
 		setAngles = angle;
 	}
+
+	public bool HasAmmo( Weapon.AmmoEnum wepType, int amount = 1 )
+	{
+		switch ( wepType )
+		{
+			case Weapon.AmmoEnum.Pistol: return Inventory.PistolAmmo >= amount;
+			case Weapon.AmmoEnum.Shotgun: return Inventory.ShotgunAmmo >= amount;
+			case Weapon.AmmoEnum.Rifle: return Inventory.RifleAmmo >= amount;
+			case Weapon.AmmoEnum.Magnum: return Inventory.MagnumAmmo >= amount;
+		}
+
+		return true;
+	}
+
+	public int UpdateAmmo( Weapon.TypeEnum wepType, int amount, bool add = true )
+	{
+		if ( add )
+		{
+			switch ( wepType )
+			{
+				case Weapon.TypeEnum.Pistol: Inventory.AddAmmo( Inventory.AmmoEnum.Pistol, amount ); break;
+				case Weapon.TypeEnum.Shotgun: Inventory.AddAmmo( Inventory.AmmoEnum.Shotgun, amount ); break;
+				case Weapon.TypeEnum.Rifle: Inventory.AddAmmo( Inventory.AmmoEnum.Rifle, amount ); break;
+				case Weapon.TypeEnum.Magnum: Inventory.AddAmmo( Inventory.AmmoEnum.Magnum, amount ); break;
+			}
+		}
+		else
+		{
+			switch ( wepType )
+			{
+				case Weapon.TypeEnum.Pistol: return Inventory.TakeAmmo(Inventory.AmmoEnum.Pistol, amount);
+				case Weapon.TypeEnum.Shotgun: return Inventory.TakeAmmo( Inventory.AmmoEnum.Shotgun, amount );
+				case Weapon.TypeEnum.Rifle: return Inventory.TakeAmmo( Inventory.AmmoEnum.Rifle, amount );
+				case Weapon.TypeEnum.Magnum: return Inventory.TakeAmmo( Inventory.AmmoEnum.Magnum, amount );
+			}
+		}
+
+
+		return 0;
+	}
+
 
 	public virtual void SetSpawnPosition()
 	{

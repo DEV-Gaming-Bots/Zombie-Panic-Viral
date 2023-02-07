@@ -27,12 +27,24 @@ public class TeamAssignTrigger : BaseTrigger
 					break;
 
 				case TeamAssignEnum.Survivor:
-					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Survivor, true );
+					if( ZPVGame.StaticStatus == ZPVGame.RoundEnum.Active )
+						ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Zombie );
+					else 
+						ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Survivor, ZPVGame.StaticStatus != ZPVGame.RoundEnum.Active );
 					break;
 
 				case TeamAssignEnum.Zombie:
-					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Zombie, true );
+					ZPVGame.UpdatePawn( player.Client, PlayerPawn.TeamEnum.Zombie, ZPVGame.StaticStatus != ZPVGame.RoundEnum.Active );
 					break;
+			}
+
+			if ( player.ServerSurvivor == PlayerPawn.SurvivorType.Random )
+			{
+				switch ( Game.Random.Int(1, 2) )
+				{
+					case 1: player.Survivor = PlayerPawn.SurvivorType.Eugene; break;
+					case 2: player.Survivor = PlayerPawn.SurvivorType.Jessica; break;
+				}
 			}
 
 			if ( ZPVGame.Instance.CanStartRound() )

@@ -51,8 +51,11 @@ public partial class ArmVM: AnimatedEntity
 
 	//CURRENT WEAPON ENUMS
 	//0 = None
-	//1 = Pistol
-	//2 = Rifle
+	//1 = Melee
+	//2 = Pistol
+	//3 = Shotgun
+	//4 = Rifle
+	//5 = Magnum
 	protected int GetWeaponAnimEnum()
 	{
 		if ( Weapon is Machete )
@@ -61,8 +64,11 @@ public partial class ArmVM: AnimatedEntity
 		if ( Weapon is USP || Weapon is Glock17 || Weapon is Glock18c )
 			return 2;
 
-		if ( Weapon is AK47 )
+		if ( Weapon is Remington )
 			return 3;
+
+		if ( Weapon is AK47 )
+			return 4;
 
 		return 0;
 	}

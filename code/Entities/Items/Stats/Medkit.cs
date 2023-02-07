@@ -1,14 +1,14 @@
 ﻿
 namespace ZPViral.Items;
 
-[Library( "zpv_item_pills" ), Title( "Pills" ), Category( "Item" )]
-[EditorModel( "models/items/pills.vmdl" )]
+[Library("zpv_item_medkit"), Title( "Medkit" ), Category( "Item" )]
+[EditorModel( "models/items/medkit.vmdl" )]
 [HammerEntity]
-public class Pills : ItemBase
+public class Medkit : ItemBase
 {
-	public override Model WorldModel => Model.Load( "models/items/pills.vmdl" );
-	public override int ItemStock => 25;
-	public override string UseSound => "pills_use";
+	public override Model WorldModel => Model.Load( "models/items/medkit.vmdl" );
+	public override int ItemStock => 50;
+	public override string UseSound => "medkit_use";
 
 	public override void OnUseItem( SurvivorPawn player )
 	{
@@ -26,8 +26,8 @@ public class Pills : ItemBase
 		} 
 		else if ( Stock >= ItemStock )
 		{
-			player.Health += 25;
-			Stock -= 25;
+			player.Health += 50;
+			Stock -= 50;
 		} 
 		else
 		{

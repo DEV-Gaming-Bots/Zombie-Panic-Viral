@@ -249,7 +249,7 @@
 						source_filename = "models/raw/weapons/v_870_anims/reload_begin.smd"
 						start_frame = -1
 						end_frame = -1
-						framerate = -1.0
+						framerate = 45.0
 						take = 0
 						reverse = false
 					},
@@ -306,7 +306,7 @@
 						source_filename = "models/raw/weapons/v_870_anims/reload_loop.smd"
 						start_frame = -1
 						end_frame = -1
-						framerate = -1.0
+						framerate = 60.0
 						take = 0
 						reverse = false
 					},
@@ -384,7 +384,7 @@
 						source_filename = "models/raw/weapons/v_870_anims/unload_loop.smd"
 						start_frame = -1
 						end_frame = -1
-						framerate = -1.0
+						framerate = 45.0
 						take = 0
 						reverse = false
 					},

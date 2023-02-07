@@ -31,7 +31,8 @@
         "water": "Trigger",
         "survivor": "Collide",
         "zombie": "Collide",
-        "zpvpawn": "Trigger"
+        "zpvpawn": "Trigger",
+        "zpvitem": "Collide"
       },
       "Pairs": [
         {
@@ -72,8 +73,34 @@
           "a": "survivor",
           "b": "survivor",
           "r": "Ignore"
+        },
+        {
+          "a": "zpvitem",
+          "b": "zpvitem"
+        },
+        {
+          "a": "zpvpawn",
+          "b": "zpvpawn"
+        },
+        {
+          "a": "zombie",
+          "b": "zpvitem",
+          "r": "Ignore"
+        },
+        {
+          "a": "survivor",
+          "b": "zpvitem",
+          "r": "Ignore"
+        },
+        {
+          "a": "zpvpawn",
+          "b": "zpvitem",
+          "r": "Ignore"
         }
       ]
-    }
+    },
+    "Summary": "",
+    "Description": "",
+    "Public": true
   }
 }

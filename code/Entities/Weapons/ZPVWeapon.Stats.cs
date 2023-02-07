@@ -84,8 +84,12 @@ public partial class Weapon : AnimatedEntity
 		Melee,
 		Pistol,
 		Shotgun,
-		Rifle
+		Rifle,
+		Magnum
 	}
 
 	public virtual TypeEnum WeaponType => TypeEnum.Melee;
+
+	//Inventory
+	public virtual int SlotUsage => 1;
 }

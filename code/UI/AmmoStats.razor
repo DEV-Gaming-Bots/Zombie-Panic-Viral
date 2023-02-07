@@ -1,0 +1,83 @@
+﻿@namespace ZPViral.UI
+@inherits Panel
+
+<style>
+	AmmoStats {
+		position: absolute;
+		bottom: 50px;
+		right: 50px;
+		color: rgb(255, 255, 255);
+		font-size: 64px;
+	}
+
+</style>
+
+<root>
+	@if (IsAssigned() && GetAmmo() != -1)
+	{
+		<panel>
+			@GetAmmo() / @GetMaxAmmo()
+		</panel>	
+	}
+</root>
+
+@code {
+	public int GetAmmo()
+	{
+		var player = Game.LocalPawn as SurvivorPawn;
+		if (player == null) return 0;
+
+		var inv = player.Inventory;
+		if (inv == null) return 0;
+
+		if (inv.ActiveWeapon == null)
+			return -1;
+
+		return (int)inv.ActiveWeapon.AmmoCount;
+	}
+
+	//TEMPORARY
+	public int GetMaxAmmo()
+	{
+		var player = Game.LocalPawn as SurvivorPawn;
+		if (player == null) return 0;
+
+		var inv = player.Inventory;
+		if (inv == null) return 0;
+
+		var weapon = inv.ActiveWeapon;
+		if (weapon == null) return 0;
+
+		return weapon.WeaponType switch
+		{
+			Weapon.TypeEnum.Pistol => player.Inventory.PistolAmmo,
+			Weapon.TypeEnum.Shotgun => player.Inventory.ShotgunAmmo,
+			Weapon.TypeEnum.Rifle => player.Inventory.RifleAmmo,
+			Weapon.TypeEnum.Magnum => player.Inventory.MagnumAmmo,
+			_ => 0
+		};
+	}
+
+	public bool IsAssigned()
+	{
+		var player = Game.LocalPawn;
+		if (player == null) return false;
+
+		return player is SurvivorPawn;
+	}
+
+	int lastMax = 0;
+
+	protected override int BuildHash()
+	{
+		var curAmmo = GetAmmo();
+
+		if(lastMax != GetMaxAmmo())
+		{
+			lastMax = GetMaxAmmo();
+			return lastMax.GetHashCode();
+		}
+
+		return curAmmo.GetHashCode();
+	}
+}

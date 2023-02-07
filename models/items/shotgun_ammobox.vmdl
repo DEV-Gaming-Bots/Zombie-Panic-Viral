@@ -14,8 +14,8 @@
 						remaps = 
 						[
 							{
-								from = "machete.vmat"
-								to = "materials/weapons/melee/machete.vmat"
+								from = "shotgunammo_sheet.vmat"
+								to = "materials/items/shotgunammo.vmat"
 							},
 						]
 						use_global_default = false
@@ -43,7 +43,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "models/raw/weapons/w_machete_reference.smd"
+						filename = "models/raw/items/boxbuckshot_reference.smd"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0

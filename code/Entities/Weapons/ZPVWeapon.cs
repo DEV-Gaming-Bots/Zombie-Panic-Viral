@@ -19,6 +19,8 @@ public partial class Weapon : AnimatedEntity, IUse
 
 		Model = WorldModel;
 
+		Tags.Add( "zpvitem" );
+
 		AmmoCount = DefaultAmmo;
 	}
 
@@ -37,6 +39,12 @@ public partial class Weapon : AnimatedEntity, IUse
 	public void OnHolster( PlayerPawn player )
 	{
 		EnableDrawing = false;
+		if ( ReloadLock )
+		{
+			ReloadLock = false;
+			FinishReloading( Player, true );
+			FinishUnloading( Player, true );
+		}
 	}
 
 	public void Cleanup()
@@ -51,6 +59,13 @@ public partial class Weapon : AnimatedEntity, IUse
 		if ( Game.IsClient ) return;
 
 		DestroyViewModel( To.Single( Player.Client ) );
+
+		if(ReloadLock)
+		{
+			ReloadLock = false;
+			FinishReloading( Player, true );
+			FinishUnloading( Player, true );
+		}
 
 		SetParent( null );
 		Owner = null;
@@ -97,13 +112,42 @@ public partial class Weapon : AnimatedEntity, IUse
 		ArmVM.Current?.SetAnimParameter( "empty", isEmpty );
 	}
 
+	PlayerPawn.SurvivorType setType = PlayerPawn.SurvivorType.Random;
+	Model curArms = null;
+
 	Model GetPreferredArmModel()
 	{
-		switch( Player.Survivor )
+		if(Player.Survivor != PlayerPawn.SurvivorType.Random)
 		{
-			case PlayerPawn.SurvivorType.Eugene: return Model.Load( "models/arms/c_arms_eugene.vmdl" );
-			case PlayerPawn.SurvivorType.Jessica: return Model.Load( "models/arms/c_arms_jessica.vmdl" );
+			setType = Player.Survivor;
+
+			switch ( setType )
+			{
+				case PlayerPawn.SurvivorType.Eugene: return Model.Load( "models/arms/c_arms_eugene.vmdl" );
+				case PlayerPawn.SurvivorType.Jessica: return Model.Load( "models/arms/c_arms_jessica.vmdl" );
+			}
+
+		} 
+		else
+		{
+			if ( curArms != null )
+				return curArms;
+
+			int random = Game.Random.Int( 1, 2 );
+
+			switch( random )
+			{
+				case 1: setType = PlayerPawn.SurvivorType.Eugene; break;
+				case 2: setType = PlayerPawn.SurvivorType.Jessica; break;
+			}
+
+			switch ( setType )
+			{
+				case PlayerPawn.SurvivorType.Eugene: return Model.Load( "models/arms/c_arms_eugene.vmdl" );
+				case PlayerPawn.SurvivorType.Jessica: return Model.Load( "models/arms/c_arms_jessica.vmdl" );
+			}
 		}
+
 
 		return null;
 	}
@@ -118,9 +162,16 @@ public partial class Weapon : AnimatedEntity, IUse
 		if ( Player is ZombiePawn ) return;
 
 		var arms = new ArmVM( this );
-		arms.Model = GetPreferredArmModel();
+
+		if ( curArms == null && Player.Survivor == PlayerPawn.SurvivorType.Random )
+		{
+			curArms = GetPreferredArmModel();
+			arms.Model = curArms;
+		}
+		else
+			arms.Model = GetPreferredArmModel();
+
 		ArmsVMEntity = arms;
-		//ArmsVMEntity.SetParent( ViewModelEntity, true );
 
 		ArmsVMEntity.SetArmAnimations();
 	}
@@ -151,9 +202,11 @@ public partial class Weapon : AnimatedEntity, IUse
 
 			return;
 		} 
-		else if ( Input.Released(InputButton.Reload) && CanReload( Player ) )
+		else if ( Input.Released(InputButton.Reload) )
 		{
-			DoReload( Player );
+			if( CanReload( Player ) )
+				DoReload( Player );
+
 			timeToUnload = -.1f;
 		}
 

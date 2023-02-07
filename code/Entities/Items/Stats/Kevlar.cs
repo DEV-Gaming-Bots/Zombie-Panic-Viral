@@ -1,6 +1,9 @@
 ﻿
 namespace ZPViral.Items;
 
+[Library( "zpv_item_kevlar" ), Title( "Kevlar Vest" ), Category( "Item" )]
+[EditorModel( "models/items/kevlar.vmdl" )]
+[HammerEntity]
 public class Kevlar : ItemBase
 {
 	public override Model WorldModel => Model.Load( "models/items/kevlar.vmdl" );
@@ -21,7 +24,7 @@ public class Kevlar : ItemBase
 			player.Armor += remain;
 			Stock -= remain;
 		}
-		else if ( Stock > ItemStock )
+		else if ( Stock >= ItemStock )
 		{
 			player.Armor += 50;
 			Stock -= 50;

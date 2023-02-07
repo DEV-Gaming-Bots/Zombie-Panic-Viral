@@ -139,7 +139,7 @@ public partial class Weapon
 
 	protected TraceResult DoTraceAttack( Vector3 start, Vector3 end, float radius )
 	{
-		string[] tags = new string[3];
+		string[] tags = new string[4];
 		tags[0] = "solid";
 		tags[1] = "glass";
 
@@ -147,6 +147,8 @@ public partial class Weapon
 			tags[2] = "survivor";
 		if ( Player is SurvivorPawn )
 			tags[2] = "zombie";
+
+		tags[3] = "zpvitem";
 
 		return Trace.Ray( start, end )
 		.UseHitboxes()
@@ -200,12 +202,18 @@ public partial class Weapon
 		if ( !Game.IsServer ) return false;
 		if ( !tr.Entity.IsValid() ) return false;
 
-		var damageInfo = DamageInfo.FromBullet( tr.EndPosition, Player.AimRay.Forward * 100 * force, damage )
-				.UsingTraceResult( tr )
-				.WithAttacker( Player )
-				.WithWeapon( this );
+		if(tr.Entity is PlayerPawn )
+		{
+			var damageInfo = DamageInfo.FromBullet( tr.EndPosition, Player.AimRay.Forward * 100 * force, damage )
+					.UsingTraceResult( tr )
+					.WithAttacker( Player )
+					.WithWeapon( this );
 
-		tr.Entity.TakeDamage( damageInfo );
+			tr.Entity.TakeDamage( damageInfo );
+		} 
+		else if (tr.Entity is not WorldEntity)
+			tr.Entity.Velocity = Player.AimRay.Forward * force * 1000;
+
 
 		return true;
 	}
@@ -235,12 +243,17 @@ public partial class Weapon
 				if ( !Game.IsServer ) continue;
 				if ( !tr.Entity.IsValid() ) continue;
 
-				var damageInfo = DamageInfo.FromBullet( tr.EndPosition, forward * 100 * force, damage )
-					.UsingTraceResult( tr )
-					.WithAttacker( Player )
-					.WithWeapon( this );
+				if ( tr.Entity is PlayerPawn )
+				{
+					var damageInfo = DamageInfo.FromBullet( tr.EndPosition, Player.AimRay.Forward * 100 * force, damage )
+							.UsingTraceResult( tr )
+							.WithAttacker( Player )
+							.WithWeapon( this );
 
-				tr.Entity.TakeDamage( damageInfo );
+					tr.Entity.TakeDamage( damageInfo );
+				}
+				else if ( tr.Entity is not WorldEntity )
+					tr.Entity.Velocity = Player.AimRay.Forward * force * 1000;
 			}
 		}
 	}

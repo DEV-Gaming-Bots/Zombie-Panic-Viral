@@ -145,6 +145,8 @@ public partial class ZPVGame
 
 	public void ResetGame()
 	{
+		RoundStatus = RoundEnum.Idle;
+
 		Game.ResetMap( All.OfType<PlayerPawn>().ToArray() );
 
 		foreach ( var player in All.OfType<PlayerPawn>().ToArray() )
@@ -210,6 +212,8 @@ public partial class ZPVGame
 
 			player.Inventory.AddWeapon( GetRandomMelee(), false );
 			player.Inventory.AddWeapon( GetRandomPistol() );
+			player.Inventory.AddAmmo( Inventory.AmmoEnum.Pistol, 10 );
+
 		} 
 		if(player is ZombiePawn)
 		{

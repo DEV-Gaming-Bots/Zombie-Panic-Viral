@@ -17,9 +17,12 @@ public partial class ZPVGame
 
 		switch (index)
 		{
-			case 0: player.Survivor = PlayerPawn.SurvivorType.Eugene; break;
-			case 1: player.Survivor = PlayerPawn.SurvivorType.Jessica; break;
+			case 0: player.ServerSurvivor = PlayerPawn.SurvivorType.Random; break;
+			case 1: player.ServerSurvivor = PlayerPawn.SurvivorType.Eugene; break;
+			case 2: player.ServerSurvivor = PlayerPawn.SurvivorType.Jessica; break;
 		}
+
+		player.Survivor = player.ServerSurvivor;
 	}
 
 	[ConCmd.Client("zpv.music", CanBeCalledFromServer = true)]

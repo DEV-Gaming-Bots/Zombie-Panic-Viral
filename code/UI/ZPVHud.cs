@@ -10,6 +10,8 @@ public class ZPVHud : RootPanel
 		Current = null;
 
 		AddChild<Vitals>();
+		AddChild<AmmoStats>();
+		AddChild<ChatBox>();
 
 		Current = this;
 	}

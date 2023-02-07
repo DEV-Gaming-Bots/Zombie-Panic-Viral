@@ -19,6 +19,8 @@ public class ItemBase : ModelEntity, IUse
 
 		Model = WorldModel;
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+
+		Tags.Add( "zpvitem" );
 	}
 
 	public virtual void OnUseItem( SurvivorPawn player )

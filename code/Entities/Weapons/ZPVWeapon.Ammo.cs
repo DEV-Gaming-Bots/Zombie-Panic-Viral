@@ -1,11 +1,8 @@
-﻿using Sandbox;
-using System.Reflection.Emit;
-
-namespace ZPViral.Weapons;
+﻿namespace ZPViral.Weapons;
 
 public partial class Weapon
 {
-	[Net] public int AmmoCount { get; set; }
+	[Net] public int AmmoCount { get; set; } = 0;
 
 	protected bool ReloadLock { get; set; } = false;
 	public TimeUntil TimeUntilReloaded { get; set; }
@@ -22,14 +19,27 @@ public partial class Weapon
 
 	public void Fill()
 	{
-		if ( AmmoCount > 0 )
-			AmmoCount = MaximumAmmo + 1;
+		bool hasBullets = AmmoCount > 0;
+
+		int clip = DefaultAmmo + (hasBullets ? 1 : 0);
+
+		if ( Player.Inventory.GetAmmo(WeaponType) < DefaultAmmo + (hasBullets ? 1 : 0))
+		{
+			clip = Player.Inventory.GetAmmo( WeaponType ) + AmmoCount;
+			clip = clip.Clamp( 0, MaximumAmmo + (hasBullets ? 1 : 0) );
+		}
+
+		if ( hasBullets )
+			Player.UpdateAmmo(WeaponType, DefaultAmmo + 1 - AmmoCount, false );
 		else
-			AmmoCount = MaximumAmmo;
+			Player.UpdateAmmo( WeaponType, DefaultAmmo - AmmoCount, false );
+
+		AmmoCount = clip;
 	}
 
 	public void Empty()
 	{
+		Player.UpdateAmmo( WeaponType, AmmoCount );
 		AmmoCount = 0;
 	}
 
@@ -75,7 +85,15 @@ public partial class Weapon
 				return;
 			}
 
-			if ( AmmoCount < 0 )
+			if( !player.Inventory.CanAdd() )
+			{
+				Tags.Set( "unloading", false );
+				ReloadLock = false;
+
+				using ( Prediction.Off() )
+					FinishUnloadEffects( To.Single( player.Client ) );
+			} 
+			else if ( AmmoCount < 0 )
 			{
 				Tags.Set( "unloading", false );
 				ReloadLock = false;
@@ -85,9 +103,11 @@ public partial class Weapon
 				using ( Prediction.Off() )
 					FinishUnloadEffects( To.Single( player.Client ) );
 			}
-			else if ( AmmoCount >= 0 )
+			else if ( AmmoCount >= 0 && player.Inventory.CanAdd() )
 			{
 				AmmoCount--;
+				player.UpdateAmmo( WeaponType, 1 );
+				player.Inventory.AddAmmo( Inventory.AmmoEnum.Shotgun );
 
 				using ( Prediction.Off() )
 					StartUnloadingEffects( To.Single( player.Client ) );
@@ -100,11 +120,11 @@ public partial class Weapon
 		}
 	}
 
-	protected void FinishUnloading( PlayerPawn player )
+	protected void FinishUnloading( PlayerPawn player, bool forceStop = false )
 	{
 		Tags.Set( "unloading", false );
 		
-		if ( WeaponType != TypeEnum.Shotgun )
+		if ( WeaponType != TypeEnum.Shotgun && !forceStop )
 			Empty();
 
 		using ( Prediction.Off() )
@@ -125,10 +145,13 @@ public partial class Weapon
 	protected bool CanReload( PlayerPawn player )
 	{
 		if ( TimeSinceActivated < TimeToEquip ) return false;
-
 		if ( ReloadLock ) return false;
 
 		if ( IsFull ) return false;
+
+		if ( Player.Inventory.GetAmmo( WeaponType ) <= 0 ) return false;
+
+		//if ( !player.HasAmmo( AmmoType, AmmoCount + (IsEmpty ? 1 : 0) ) ) return false;
 
 		return true;
 	}
@@ -170,14 +193,17 @@ public partial class Weapon
 				StartReloadShotgun();
 			else
 			{
-				if( AmmoCount >= MaximumAmmo )
+				Log.Info( Player );
+
+				if( AmmoCount >= MaximumAmmo || player.Inventory.ShotgunAmmo <= 0 )
 				{
 					ReloadLock = false;
 					FinishReloading(player);
 				} 
-				else if ( AmmoCount < MaximumAmmo )
+				else if ( AmmoCount < MaximumAmmo && player.Inventory.ShotgunAmmo > 0 )
 				{
 					AmmoCount++;
+					player.Inventory.TakeAmmo( Inventory.AmmoEnum.Shotgun );
 					ShotgunReloadEffects();
 				}
 
@@ -222,11 +248,11 @@ public partial class Weapon
 		ArmVM.Current?.SetAnimParameter( "empty", isEmpty );
 	}
 
-	protected void FinishReloading( PlayerPawn player )
+	protected void FinishReloading( PlayerPawn player, bool forceStop = false )
 	{
 		Tags.Set( "reloading", false );
-		
-		if(WeaponType != TypeEnum.Shotgun)
+
+		if (WeaponType != TypeEnum.Shotgun && !forceStop)
 			Fill();
 
 		using ( Prediction.Off() )

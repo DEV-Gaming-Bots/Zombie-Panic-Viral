@@ -1,7 +1,7 @@
 ﻿namespace ZPViral.Weapons.FireArms;
 
 [Library("zpv_weapon_870"), Title( "870 Remington" ), Category("Weapon")]
-[EditorModel( "models/weapons/firearms/w_870.vmdl" )]
+[EditorModel( "models/weapons/firearms/w_remington.vmdl" )]
 [HammerEntity]
 public partial class Remington : Weapon
 {
@@ -20,9 +20,9 @@ public partial class Remington : Weapon
 	public override bool AllowChamber => false;
 	public override int DefaultAmmo => 6;
 	public override int MaximumAmmo => 6;
-	public override float ReloadTime => 1.25f;
+	public override float ReloadTime => 0.75f;
 	public override float EmptyReloadTime => 1.25f;
-	public override float UnloadTime => 1.25f;
+	public override float UnloadTime => 0.75f;
 	public override AmmoEnum AmmoType => AmmoEnum.Shotgun;
 	public override float ShellReload => 1.25f;
 	public override float ShellUnload => 1.10f;
@@ -57,5 +57,8 @@ public partial class Remington : Weapon
 	public override Angles AvoidanceAngleOffset => new Angles( 10, 0, 0 );
 	public override Vector3 CrouchPositionOffset => new Vector3( -5, 0, 0 );
 	public override Angles CrouchAngleOffset => new Angles( 0, 0, 0 );
-	public override TypeEnum WeaponType => TypeEnum.Shotgun;
+	public override TypeEnum WeaponType => TypeEnum.Shotgun;    
+	
+	//Inventory
+	public override int SlotUsage => 2;
 }
